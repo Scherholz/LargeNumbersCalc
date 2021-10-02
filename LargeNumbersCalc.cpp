@@ -2,13 +2,7 @@
 //
 
 #include <iostream>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 #include <string>
-#include <boost/beast/core.hpp>
-#include <boost/beast/websocket.hpp>
-#include <boost/asio/dispatch.hpp>
-#include <boost/asio/strand.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <functional>
@@ -18,6 +12,13 @@
 #include <thread>
 #include <vector>
 #include <stack>
+
+#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/asio/dispatch.hpp>
+#include <boost/asio/strand.hpp>
 #include <boost/algorithm/string.hpp>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
@@ -56,6 +57,7 @@ std::string CalcFromStr(std::string inStr) {
     std::istringstream input;
     std::string currElement;
     input.str(inStr);
+
     while (std::getline(input, currElement, ',')) {
 
         if (currElement == "") break;
@@ -182,8 +184,8 @@ std::string CalcFromStr(std::string inStr) {
     // Get the Time Difference by subtracting start time from end time
     boost::posix_time::time_duration dur = end - start;
     std::stringstream timeStamp;
-    timeStamp << "[" << std::setfill('0') << std::setw(5) << 00000+dur.seconds() << "." 
-        << std::setfill('0') << std::setw(4) << 0000+dur.total_milliseconds() << "s] ";
+    timeStamp << "[" << std::setfill('0') << std::setw(5) << dur.seconds() << "." 
+        << std::setfill('0') << std::setw(6) << dur.total_microseconds() << "s] ";
 
     // prefix ret with the execution time stamp
     ret = timeStamp.str() + ret;
@@ -438,9 +440,9 @@ int main(int argc, char** argv)
     if (argc != 4)
     {
         std::cerr <<
-            "Usage: websocket-server-async <address> <port> <threads>\n" <<
+            "Usage: LargeNumbersCalc.exe <address> <port> <threads>\n" <<
             "Example:\n" <<
-            "    websocket-server-async 0.0.0.0 8080 1\n";
+            "    LargeNumbersCalc.exe 127.0.0.1 8080 1\n";
         return EXIT_FAILURE;
     }
     auto const address = net::ip::make_address(argv[1]);
