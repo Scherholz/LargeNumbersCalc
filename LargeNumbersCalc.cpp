@@ -21,6 +21,9 @@
 #include <boost/asio/strand.hpp>
 #include <boost/algorithm/string.hpp>
 
+
+
+
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
@@ -29,7 +32,7 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 using namespace boost::multiprecision;
 using Int = boost::multiprecision::cpp_int;
-using Float = boost::multiprecision::cpp_dec_float_50;
+using Float = boost::multiprecision::cpp_dec_float_100;
 
 //------------------------------------------------------------------------------
 // CALC STUFF
@@ -184,8 +187,12 @@ std::string CalcFromStr(std::string inStr) {
     // Get the Time Difference by subtracting start time from end time
     boost::posix_time::time_duration dur = end - start;
     std::stringstream timeStamp;
+
+    // 1 second = 1000000 microseconds so we need to subtract the seconds portion from 
+    // dur.total_microseconds() which returns total microseconds including seconds, minutes, hours
+    // by calculating dur.total_microseconds()-(dur.seconds()*1000000)
     timeStamp << "[" << std::setfill('0') << std::setw(5) << dur.seconds() << "." 
-        << std::setfill('0') << std::setw(6) << dur.total_microseconds() << "s] ";
+        << std::setfill('0') << std::setw(6) << dur.total_microseconds()-(dur.seconds()*1000000) << "s] ";
 
     // prefix ret with the execution time stamp
     ret = timeStamp.str() + ret;
