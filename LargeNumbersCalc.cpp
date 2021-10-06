@@ -12,6 +12,7 @@
 #include <thread>
 #include <vector>
 #include <stack>
+#include <chrono>
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
@@ -55,7 +56,8 @@ std::string CalcFromStr(std::string inStr) {
 
 
     // Get the current time before executing Task
-    boost::posix_time::ptime start = boost::posix_time::microsec_clock::local_time();
+    //boost::posix_time::ptime start = boost::posix_time::microsec_clock::local_time();
+    auto start = std::chrono::steady_clock::now();
 
     std::istringstream input;
     std::string currElement;
@@ -183,16 +185,20 @@ std::string CalcFromStr(std::string inStr) {
     }
 
     // Get the current time after executing Task
-    boost::posix_time::ptime end = boost::posix_time::microsec_clock::local_time();
+    //boost::posix_time::ptime end = boost::posix_time::microsec_clock::local_time();
     // Get the Time Difference by subtracting start time from end time
-    boost::posix_time::time_duration dur = end - start;
+    //boost::posix_time::time_duration dur = end - start;
+
+    auto end = std::chrono::steady_clock::now();
+    auto sec = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+    auto micros = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     std::stringstream timeStamp;
 
     // 1 second = 1000000 microseconds so we need to subtract the seconds portion from 
     // dur.total_microseconds() which returns total microseconds including seconds, minutes, hours
     // by calculating dur.total_microseconds()-(dur.seconds()*1000000)
-    timeStamp << "[" << std::setfill('0') << std::setw(5) << dur.seconds() << "." 
-        << std::setfill('0') << std::setw(6) << dur.total_microseconds()-(dur.seconds()*1000000) << "s] ";
+    timeStamp << "[" << std::setfill('0') << std::setw(5) << sec << "."
+        << std::setfill('0') << std::setw(6) << micros -(sec *1000000) << "s] ";
 
     // prefix ret with the execution time stamp
     ret = timeStamp.str() + ret;
